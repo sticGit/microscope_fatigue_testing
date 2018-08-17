@@ -32,29 +32,28 @@ if __name__ == "__main__":
         camera = ms.camera
         stage = ms.stage
 
-        camera.resolution=(640,480)
+        camera.resolution=(1640,1232)
 
         camera.start_preview(resolution=(640,480))
         
-        i = 0.1
+        image = ms.rgb_image().astype(np.float32)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        mean = np.mean(image)
+        w, h = image.shape
+        template = (image - mean)[w//2-100:w//2+100, h//2-100:h//2+100]
+        np.savez("template.npz", template=template)
+        plt.figure()
+        plt.imshow(template)
 
-        while i < 1:
+        for i in [0.1, ]:
             image = ms.rgb_image().astype(np.float32)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            mean = np.mean(image)
-            templ8 = (image - mean)[100:-100, 100:-100]
+
         
             frame = image
-            pos, corr = find_template(templ8, frame - np.mean(frame), return_corr = True, fraction = i)
+            pos, corr = find_template(template, frame - np.mean(frame), return_corr = True, fraction = i)
         
             plt.figure()
-            plt.plot(np.sum(corr, axis=1))
-            plt.savefig("test_correlation_1_fraction_{}.jpg".format(i), bbox_inches='tight', dpi=180)
-            plt.figure()
-            plt.plot(np.sum(corr, axis=0))
-            plt.savefig("test_correlation_2_fraction_{}.jpg".format(i), bbox_inches='tight', dpi=180)
-            plt.figure()
             plt.imshow(corr.astype(np.float))
-            plt.savefig("test_correlation_3_fraction_{}.jpg".format(i), bbox_inches='tight', dpi=180)
-            plt.close('all')
-            i += 0.1
+            plt.savefig("test_correlation_fraction_{}.jpg".format(i), bbox_inches='tight', dpi=180)
+    plt.show()
