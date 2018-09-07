@@ -56,17 +56,21 @@ if __name__ == "__main__":
 
         initial_stage_position = stage.position
 
-        for d in [1, -1]:
-            data_stage = np.zeros((n_steps + 1, 3))
-            data_cam = np.zeros((n_steps + 1, 2))
-            for i in range(n_steps+1):
-                if i>0:
-                    stage.move_rel([d*step_size, 0, 0])
-                data_stage[i, 0:] = stage.position
-                frame = ms.rgb_image().astype(np.float32).mean(axis=2)
-                data_cam[i, 0:], corr = find_template(template, frame, return_corr = True, fraction=0.15)
-            df.add_data(data_stage, data_group, "data_stage_{}".format("out" if d==1 else "back"))
-            df.add_data(data_cam, data_group, "data_cam_{}".format("out" if d==1 else "back"))
+        try:
+            while True:
+                for d in [1, -1]:
+                    data_stage = np.zeros((n_steps + 1, 3))
+                    data_cam = np.zeros((n_steps + 1, 2))
+                    for i in range(n_steps+1):
+                        if i>0:
+                            stage.move_rel([d*step_size, 0, 0])
+                        data_stage[i, 0:] = stage.position
+                        frame = ms.rgb_image().astype(np.float32).mean(axis=2)
+                        data_cam[i, 0:], corr = find_template(template, frame, return_corr = True, fraction=0.15)
+                    df.add_data(data_stage, data_group, "data_stage_{}".format("out" if d==1 else "back"))
+                    df.add_data(data_cam, data_group, "data_cam_{}".format("out" if d==1 else "back"))
+        except KeyboardInterrupt:
+            print("Got a keyboard interrupt, stopping...")
 
         stage.move_abs(initial_stage_position)
         camera.stop_preview()
