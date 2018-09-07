@@ -34,7 +34,7 @@ if __name__ == "__main__":
         stage = ms.stage
 
         step_size = 1000
-        n_steps = 3
+        n_steps = 20
         backlash = 0
 
         camera.resolution=(1640,1232)
