@@ -5,12 +5,22 @@ import matplotlib.pyplot as plt
 import h5py
 import numpy.linalg
 import matplotlib
+import sys
 
 if __name__ == "__main__":
     print ("Loading data...")
 
-    df = h5py.File("fatigue_tests.hdf5", mode = "r")
-    data_group = df.values()[-1] # should be fatigue_test%03d
+    df = h5py.File(sys.argv[1], mode = "r")
+    print("Data groups in this file:")
+    for k, v in df.items():
+        print("{}: {} items".format(k, len(v.keys())))
+    try:
+        data_group = df[sys.argv[2]] # should be fatigue_test%03d
+    except:
+        print("Picking latest group, no group specified")
+        data_group = df.values()[-1]
+    print("Using group {}".format(data_group.name))
+
     dset_names = data_group.keys()
     print(dset_names)
 
