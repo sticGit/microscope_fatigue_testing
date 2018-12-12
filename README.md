@@ -10,6 +10,15 @@ To run fatigue tests, you will need a motorised openflexure microscope, along wi
 
 Use the focusing ring supplied with the camera, or the printed lens removal tool, to adjust the focus of the pi camera's lens by unscrewing it until you can focus on a target placed on the microscope stage.  I reccommend using the one from the test target folder in this repository, which will give a nice strong correlation signal.
 
+## Installing the scripts
+You first need to make sure you have installed the [OpenFlexure Microscope software](https://github.com/rwb27/openflexure_microscope_software) and it is working properly.  Once you have done this, you can clone the repository using:
+
+```bash
+git clone https://github.com/rwb27/microscope_fatigue_testing.git
+```
+
+This will copy the scripts to a folder on your computer.  You can easily update them by running "git pull" to take the latest version of the scripts from this repository.
+
 ## Preparing for the fatigue test
 Once you have the microscope set up so you can see the target, in focus, you'll need to centre the microscope on the test target.  Probably the easiest way to do this is:
 
