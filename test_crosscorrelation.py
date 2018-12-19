@@ -63,5 +63,5 @@ if __name__ == "__main__":
         
             plt.figure()
             plt.imshow(corr.astype(np.float))
-            plt.savefig("test_correlation_fraction_{}.jpg".format(i), bbox_inches='tight', dpi=180)
+            plt.savefig("test_correlation_fraction_{}.pdf".format(i), bbox_inches='tight', dpi=180)
     plt.show()
