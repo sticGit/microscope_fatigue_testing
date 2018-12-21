@@ -68,9 +68,9 @@ class Datafile():
             n += 1
         grouppath = group + "%03d" % n
         g = parent.create_group(grouppath)
-        g.attrs.create("timestamp", datetime.datetime.now().isoformat())  # Add timestamp attribute
+        g.attrs.create("timestamp", datetime.datetime.now().isoformat().encode('UTF-8'))  # Add timestamp attribute
         if description is not None:
-            g.attrs.create("Description", description)
+            g.attrs.create("Description", description.encode('UTF-8'))
         return g
 
 # =============================================================================
@@ -102,7 +102,7 @@ class Datafile():
             n += 1
         dataset = dataset + "%05d" % n
         dset = group_object.create_dataset(dataset, data=indata)
-        dset.attrs.create("timestamp", datetime.datetime.now().isoformat())  # Add a timestamp attribute
+        dset.attrs.create("timestamp", datetime.datetime.now().isoformat().encode('UTF-8'))  # Add a timestamp attribute
         if description is not None:
             dset.attrs.create("Description", description)
         self._datafile.flush()

@@ -85,7 +85,7 @@ if __name__ == "__main__":
                 if time.time() - last_saved_image_time > 900:
                     # periodically save a JPEG of what the camera sees.  NB we could do this more
                     # efficiently by capturing JPEG directly - but it's hardly time critical.
-                    frame = cam.rgb_image()
+                    frame = ms.rgb_image()
                     df.add_data(np.array(cv2.imencode('.jpg', frame)[1]), data_group, "image")
                     last_saved_image_time = time.time()
         except KeyboardInterrupt:
