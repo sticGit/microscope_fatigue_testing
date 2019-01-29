@@ -70,5 +70,5 @@ if __name__ == "__main__":
                 for k, v in dset.attrs.items():
                     outfile[dset.name].attrs[k] = v
         g['template_image'] = np.array(data_group['template_image'])
-            
+    
     plt.show()
