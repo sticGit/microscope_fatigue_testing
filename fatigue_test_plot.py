@@ -5,15 +5,18 @@ import matplotlib.pyplot as plt
 import h5py
 import numpy.linalg
 import matplotlib
+from matplotlib.backends.backend_pdf import PdfPages
 import sys
+from os.path import basename, splitext
 import argparse
 from contextlib import contextmanager, closing
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Analyse data from the fatigue test experiment.")
-    parser.add_argument("filename", default="fatigue_tests.hdf5", nargs="?")
-    parser.add_argument("group_path", default="<latest>", nargs="?")
-    parser.add_argument("--output_file")
+    parser.add_argument("filename", default="fatigue_tests.hdf5", nargs="?", help="Filename of the data file you are plotting")
+    parser.add_argument("group_path", default="<latest>", nargs="?", help="The path of the data group you want to plot (defaults to the most recent).")
+    parser.add_argument("--output_file", help="Filename for the output HDF5 file, defaults to the input filename plus _<group_path>_summary.h5.")
+    parser.add_argument("--no_summary", action="store_true", help="Disable generating the summary file (HDF5 file with images stripped out)")
     args = parser.parse_args()
     print ("Loading data from {}...".format(args.filename))
     df = h5py.File(args.filename, mode = "r")
@@ -56,19 +59,35 @@ if __name__ == "__main__":
         ax2.plot(data_cam[:,0], data_cam[:,1])
     ax2.set_aspect(1)
     
-    def basename(f):
-        return f.split('/')[-1]
-    output_fname = args.filename + "_" + basename(data_group.name) + "_summary.hdf5" if args.output_file is None else args.output_file
-    with closing(h5py.File(output_fname, mode="w")) as outfile:
-        g = outfile.create_group(data_group.name)
-        # copy the group attributes
-        for k, v in data_group.attrs.items():
-            g.attrs[k] = v
-        for name, dset in g.items():
-            if name.startswith("data_"):
-                outfile[dset.name] = np.array(dset)
-                for k, v in dset.attrs.items():
-                    outfile[dset.name].attrs[k] = v
-        g['template_image'] = np.array(data_group['template_image'])
+    # Save these plots as a PDF
+    if "_summary" in args.filename:
+        pdf_fname = splitext(args.filename)[0] + ".pdf"
+    else:
+        pdf_fname = splitext(args.filename)[0] + "_" + basename(data_group.name) + ".pdf"
+    print("Saving PDF of plots to {}".format(pdf_fname))
+    with PdfPages(pdf_fname) as pdf:
+        pdf.savefig(f)
+        pdf.savefig(f2)
+   
+    # Generate a "summary" HDF5 file without the images embedded every 100 moves, and containing only one group.
+    if not args.no_summary:
+        def basename(f):
+            return f.split('/')[-1]
+        if args.output_file is None:
+            output_fname = splitext(args.filename)[0] + "_" + basename(data_group.name) + "_summary.h5"
+        else:
+            output_fname = args.output_file
+        print("Saving just this dataset, with no images, to {}".format(output_fname))
+        with closing(h5py.File(output_fname, mode="w")) as outfile:
+            g = outfile.create_group(data_group.name)
+            # copy the group attributes
+            for k, v in data_group.attrs.items():
+                g.attrs[k] = v
+            for name, dset in data_group.items():
+                if name.startswith("data_"):
+                    g[name] = np.array(dset)
+                    for k, v in dset.attrs.items():
+                        g[name].attrs[k] = v
+            g['template_image'] = np.array(data_group['template_image'])
     
     plt.show()
