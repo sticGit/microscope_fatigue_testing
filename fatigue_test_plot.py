@@ -7,11 +7,13 @@ import numpy.linalg
 import matplotlib
 import sys
 import argparse
+from contextlib import contextmanager, closing
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Analyse data from the fatigue test experiment.")
     parser.add_argument("filename", default="fatigue_tests.hdf5", nargs="?")
     parser.add_argument("group_path", default="<latest>", nargs="?")
+    parser.add_argument("--output_file")
     args = parser.parse_args()
     print ("Loading data from {}...".format(args.filename))
     df = h5py.File(args.filename, mode = "r")
@@ -25,6 +27,7 @@ if __name__ == "__main__":
         print("Picking latest group, no group specified")
         data_group = df.values()[-1]
     print("Using group {}".format(data_group.name))
+
 
     dset_names = data_group.keys()
 #    print(dset_names)
@@ -52,5 +55,20 @@ if __name__ == "__main__":
             ax[j].plot(x,data_cam[:,j])
         ax2.plot(data_cam[:,0], data_cam[:,1])
     ax2.set_aspect(1)
+    
+    def basename(f):
+        return f.split('/')[-1]
+    output_fname = args.filename + "_" + basename(data_group.name) + "_summary.hdf5" if args.output_file is None else args.output_file
+    with closing(h5py.File(output_fname, mode="w")) as outfile:
+        g = outfile.create_group(data_group.name)
+        # copy the group attributes
+        for k, v in data_group.attrs.items():
+            g.attrs[k] = v
+        for name, dset in g.items():
+            if name.startswith("data_"):
+                outfile[dset.name] = np.array(dset)
+                for k, v in dset.attrs.items():
+                    outfile[dset.name].attrs[k] = v
+        g['template_image'] = np.array(data_group['template_image'])
             
     plt.show()
