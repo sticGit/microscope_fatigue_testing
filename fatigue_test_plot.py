@@ -28,7 +28,7 @@ if __name__ == "__main__":
         data_group = df[args.group_path] # should be fatigue_test%03d
     except:
         print("Picking latest group, no group specified")
-        data_group = df.values()[-1]
+        data_group = list(df.values())[-1]
     print("Using group {}".format(data_group.name))
 
 
