@@ -1,5 +1,7 @@
 # microscope_fatigue_testing
-Fatigue testing scripts for the openflexure microscope, based on Ed Meng's project scripts  GNU GPL v3
+Fatigue testing scripts for the openflexure microscope, based on Ed Meng's project scripts  
+
+Licensed under GNU GPL v3
 
 This is quite a sketchy folder of scripts that I have adapted quite quickly to run fatigue tests.  They will hopefully mature over time!  They are not yet intended for public consumption, use at your own risk.
 
@@ -17,7 +19,18 @@ You first need to make sure you have installed the [OpenFlexure Microscope softw
 git clone https://github.com/rwb27/microscope_fatigue_testing.git
 ```
 
-This will copy the scripts to a folder on your computer.  You can easily update them by running "git pull" to take the latest version of the scripts from this repository.
+This will copy the scripts to a folder on your computer.  You can easily update them by running "git pull" to take the latest version of the scripts from this repository.  There are a few additional dependencies you will need to install, which require a combination of pip and apt-get.  First, make sure you are in the correct virtual environment:
+```bash
+source activate ~/microscope/bin/activate
+```
+Next, download and install the system-level ``h5py`` module (which includes the binary parts)
+```bash
+sudo apt-get install python3-h5py
+```
+Finally, install the python libraries for ``h5py`` and ``cv2`` in our virtual environment:
+```bash
+pip install h5py opencv-python
+```
 
 ## Preparing for the fatigue test
 Once you have the microscope set up so you can see the target, in focus, you'll need to centre the microscope on the test target.  Probably the easiest way to do this is:
