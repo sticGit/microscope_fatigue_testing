@@ -29,7 +29,7 @@ sudo apt-get install python3-h5py
 ```
 Finally, install the python libraries for ``h5py`` and ``cv2`` in our virtual environment:
 ```bash
-pip install h5py opencv-python
+pip install h5py opencv-python-headless
 ```
 
 ## Preparing for the fatigue test
